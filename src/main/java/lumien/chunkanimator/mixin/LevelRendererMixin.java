@@ -43,8 +43,8 @@ public final class LevelRendererMixin {
     private void preRenderChunk(RenderType renderType, PoseStack poseStack, double camX, double camY, double camZ,
                                 Matrix4f projectionMatrix, CallbackInfo ci, boolean notTranslucent,
                                 ObjectListIterator<LevelRenderer.RenderChunkInfo> renderChunkIterator,
-                                VertexFormat typeFormat, ShaderInstance shaderInstance, Uniform chunkOffset,
-                                boolean atLeastOneLayerDrawn, LevelRenderer.RenderChunkInfo renderChunkInfo,
+                                ShaderInstance shaderInstance, Uniform chunkOffset,
+                                LevelRenderer.RenderChunkInfo renderChunkInfo,
                                 ChunkRenderDispatcher.RenderChunk renderChunk, VertexBuffer chunkVertexBuffer,
                                 BlockPos chunkOrigin) {
         ChunkAnimator.instance.animationHandler.preRender(
