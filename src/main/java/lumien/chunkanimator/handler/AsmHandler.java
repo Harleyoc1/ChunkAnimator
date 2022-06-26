@@ -8,7 +8,7 @@ public class AsmHandler
 {
 	public static void preRenderChunk(RenderChunk renderChunk)
 	{
-		ChunkAnimator.INSTANCE.animationHandler.preRender(renderChunk);
+		ChunkAnimator.INSTANCE.animationHandler.preRender(renderChunk, renderChunk.getPosition());
 	}
 
 	public static void setOrigin(RenderChunk renderChunk, int oX, int oY, int oZ)

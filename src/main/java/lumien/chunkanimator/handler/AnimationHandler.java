@@ -2,6 +2,8 @@ package lumien.chunkanimator.handler;
 
 import java.util.WeakHashMap;
 
+import org.lwjgl.util.vector.Vector3f;
+
 import lumien.chunkanimator.ChunkAnimator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -23,14 +25,23 @@ import penner.easing.Sine;
 
 public class AnimationHandler
 {
-	WeakHashMap<RenderChunk, AnimationData> timeStamps;
+	WeakHashMap<Object, AnimationData> timeStamps;
 
 	public AnimationHandler()
 	{
-		timeStamps = new WeakHashMap<RenderChunk, AnimationData>();
+		timeStamps = new WeakHashMap<Object, AnimationData>();
 	}
 
-	public void preRender(RenderChunk renderChunk)
+	public void preRender(Object renderChunk, BlockPos pos)
+	{
+		Vector3f offset = getOffset(renderChunk, pos);
+		if (offset != null)
+		{
+			GlStateManager.translate(offset.x, offset.y, offset.z);
+		}
+	}
+
+	public Vector3f getOffset(Object renderChunk, BlockPos position)
 	{
 		if (timeStamps.containsKey(renderChunk))
 		{
@@ -50,7 +61,7 @@ public class AnimationHandler
 					BlockPos zeroedPlayerPosition = Minecraft.getMinecraft().player.getPosition();
 					zeroedPlayerPosition = zeroedPlayerPosition.add(0, -zeroedPlayerPosition.getY(), 0);
 
-					BlockPos zeroedCenteredChunkPos = renderChunk.getPosition().add(8, -renderChunk.getPosition().getY(), 8);
+					BlockPos zeroedCenteredChunkPos = position.add(8, -position.getY(), 8);
 
 					Vec3i dif = zeroedPlayerPosition.subtract(zeroedCenteredChunkPos);
 
@@ -92,7 +103,7 @@ public class AnimationHandler
 
 			if (timeDif < animationDuration)
 			{
-				int chunkY = renderChunk.getPosition().getY();
+				int chunkY = position.getY();
 				double modY;
 
 				if (mode == 2)
@@ -115,22 +126,20 @@ public class AnimationHandler
 				switch (mode)
 				{
 					case 0:
-						GlStateManager.translate(0, -chunkY + getFunctionValue(timeDif, 0, chunkY, animationDuration), 0);
-						break;
+						return new Vector3f(0, -chunkY + getFunctionValue(timeDif, 0, chunkY, animationDuration), 0);
 					case 1:
-						GlStateManager.translate(0, 256 - chunkY - getFunctionValue(timeDif, 0, 256 - chunkY, animationDuration), 0);
-						break;
+						return new Vector3f(0, 256 - chunkY - getFunctionValue(timeDif, 0, 256 - chunkY, animationDuration), 0);
 					case 3:
 						EnumFacing chunkFacing = animationData.chunkFacing;
 
 						if (chunkFacing != null)
 						{
 							Vec3i vec = chunkFacing.getDirectionVec();
-							double mod = -(200D - (200D / animationDuration * timeDif));
+							float mod = -(200F - (200F / animationDuration * timeDif));
 
 							mod = -(200 - getFunctionValue(timeDif, 0, 200, animationDuration));
 
-							GlStateManager.translate(vec.getX() * mod, 0, vec.getZ() * mod);
+							return new Vector3f(vec.getX() * mod, 0, vec.getZ() * mod);
 						}
 						break;
 				}
@@ -140,6 +149,7 @@ public class AnimationHandler
 				timeStamps.remove(renderChunk);
 			}
 		}
+		return null;
 	}
 
 	private float getFunctionValue(float t, float b, float c, float d)
@@ -173,7 +183,7 @@ public class AnimationHandler
 		return Sine.easeOut(t, b, c, d);
 	}
 
-	public void setOrigin(RenderChunk renderChunk, BlockPos position)
+	public void setOrigin(Object renderChunk, BlockPos position)
 	{
 		if (Minecraft.getMinecraft().player != null)
 		{
