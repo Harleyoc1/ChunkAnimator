@@ -1,12 +1,10 @@
-import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.matthewprenger.cursegradle.*
+import com.matthewprenger.cursegradle.CurseArtifact
+import com.matthewprenger.cursegradle.CurseExtension
+import com.matthewprenger.cursegradle.CurseProject
+import com.matthewprenger.cursegradle.CurseRelation
 import org.apache.tools.ant.filters.ReplaceTokens
-import java.io.FileInputStream
-import java.io.InputStreamReader
 import java.time.Instant
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 plugins {
     id("java")
@@ -111,11 +109,11 @@ tasks.compileJava {
 tasks.jar {
     manifest.attributes(
             "Specification-Title" to project.name,
-            "Specification-Vendor" to "ferreusveritas",
+            "Specification-Vendor" to "lumien231",
             "Specification-Version" to "1",
             "Implementation-Title" to project.name,
             "Implementation-Version" to project.version,
-            "Implementation-Vendor" to "ferreusveritas",
+            "Implementation-Vendor" to "lumien231",
             "Implementation-Timestamp" to DateTimeFormatter.ISO_INSTANT.format(Instant.now())
     )
 
@@ -147,17 +145,6 @@ tasks.jar {
     )
 }
 
-fun readChangelog(): String? {
-    val versionInfoFile = file(
-            (optionalProperty("dynamictrees.version_info_repo.directory") ?: return null)
-    + File.separatorChar + "DynamicTrees.json"
-    )
-    val jsonObject = Gson().fromJson(InputStreamReader(versionInfoFile.inputStream()), JsonObject::class.java)
-    return jsonObject
-            .get(mcVersion)?.asJsonObject
-            ?.get(project.version.toString())?.asString
-}
-
 curseforge {
     if (project.hasProperty("curseApiKey")) {
         apiKey = project.property("curseApiKey")
@@ -167,7 +154,7 @@ curseforge {
 
             addGameVersion(mcVersion)
 
-            changelog = readChangelog() ?: "No changelog provided."
+            changelog = "Changelog added manually after release."
             changelogType = "markdown"
             releaseType = optionalProperty("curseFileType") ?: "release"
 
@@ -194,7 +181,7 @@ publishing {
 
             pom {
                 name.set(modName)
-                url.set("https://github.com/ferreusveritas/$modName")
+                url.set("https://github.com/Harleyoc1/$modName")
                 licenses {
                     license {
                         name.set("MIT")
@@ -203,23 +190,15 @@ publishing {
                 }
                 developers {
                     developer {
-                        id.set("ferreusveritas")
-                        name.set("Ferreus Veritas")
-                    }
-                    developer {
-                        id.set("supermassimo")
-                        name.set("Max Hyper")
-                    }
-                    developer {
                         id.set("Harleyoc1")
                         name.set("Harley O'Connor")
                         email.set("Harleyoc1@gmail.com")
                     }
                 }
                 scm {
-                    connection.set("scm:git:git://github.com/ferreusveritas/$modName.git")
-                    developerConnection.set("scm:git:ssh://github.com/ferreusveritas/$modName.git")
-                    url.set("https://github.com/ferreusveritas/$modName")
+                    connection.set("scm:git:git://github.com/Harleyoc1/$modName.git")
+                    developerConnection.set("scm:git:ssh://github.com/Harleyoc1/$modName.git")
+                    url.set("https://github.com/Harleyoc1/$modName")
                 }
             }
 
