@@ -8,6 +8,8 @@ import java.time.format.DateTimeFormatter
 
 fun property(key: String) = project.findProperty(key).toString()
 
+apply(from = "https://gist.githubusercontent.com/Harleyoc1/4d23d4e991e868d98d548ac55832381e/raw/applesiliconfg.gradle")
+
 plugins {
     id("java")
     id("net.minecraftforge.gradle")
@@ -28,7 +30,7 @@ version = "$mcVersion-$modVersion"
 group = property("group")
 
 minecraft {
-    mappings("parchment", "${property("mappingsVersion")}-1.18.2")
+    mappings("parchment", "${property("mappingsVersion")}-$mcVersion")
     accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
 
     runs {

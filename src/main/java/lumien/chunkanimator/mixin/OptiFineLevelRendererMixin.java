@@ -3,7 +3,6 @@ package lumien.chunkanimator.mixin;
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexBuffer;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Matrix4f;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import lumien.chunkanimator.ChunkAnimator;
@@ -48,10 +47,9 @@ public final class OptiFineLevelRendererMixin {
     private void preRenderChunk(RenderType renderType, PoseStack poseStack, double camX, double camY, double camZ,
                                 Matrix4f projectionMatrix, CallbackInfo ci, boolean shaders, boolean notTranslucent,
                                 ObjectListIterator<LevelRenderer.RenderChunkInfo> renderChunkIterator,
-                                VertexFormat typeFormat, ShaderInstance shaderInstance, Uniform chunkOffset,
-                                boolean smartAnimations, boolean atLeastOneLayerDrawn,
-                                LevelRenderer.RenderChunkInfo renderChunkInfo,
-                                ChunkRenderDispatcher.RenderChunk renderChunk, VertexBuffer chunkVertexBuffer,
+                                ShaderInstance shaderInstance, Uniform chunkOffset,
+                                boolean useSmartAnimations, LevelRenderer.RenderChunkInfo renderChunkInfo,
+                                ChunkRenderDispatcher.RenderChunk renderChunk, VertexBuffer typeBuffer,
                                 BlockPos chunkOrigin) {
         ChunkAnimator.instance.animationHandler.preRender(
                 new PreRenderContext(

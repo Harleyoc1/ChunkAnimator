@@ -74,7 +74,7 @@ public final class AnimationHandler {
 
 		if (!ChunkAnimatorConfig.DISABLE_AROUND_PLAYER.get() || zeroedPlayerPos.distSqr(zeroedCenteredChunkPos) > (64 * 64)) {
 			timeStamps.put(renderChunk, new AnimationData(-1L, ChunkAnimatorConfig.MODE.get() == AnimationMode.HORIZONTAL_SLIDE ?
-					getChunkFacing(zeroedPlayerPos.m_121996_(zeroedCenteredChunkPos)) : null));
+					getChunkFacing(zeroedPlayerPos.subtract(zeroedCenteredChunkPos)) : null));
 		} else {
 			timeStamps.remove(renderChunk);
 		}
@@ -88,7 +88,7 @@ public final class AnimationHandler {
 	 */
 	public static BlockPos getZeroedPlayerPos(final LocalPlayer player) {
 		final BlockPos playerPos = new BlockPos(player.getBlockX(), player.getBlockY(), player.getBlockZ());
-		return playerPos.m_7637_(0, -player.getBlockY(), 0);
+		return playerPos.offset(0, -player.getBlockY(), 0);
 	}
 
 	/**
@@ -99,7 +99,7 @@ public final class AnimationHandler {
 	 * @return The zeroed, centered {@link BlockPos}.
 	 */
 	public static BlockPos getZeroedCenteredChunkPos(final BlockPos position) {
-		return position.m_7637_(8, -position.getY(), 8);
+		return position.offset(8, -position.getY(), 8);
 	}
 
 	/**
