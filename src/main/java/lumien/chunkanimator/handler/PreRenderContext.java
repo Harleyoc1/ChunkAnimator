@@ -1,6 +1,6 @@
 package lumien.chunkanimator.handler;
 
-import com.mojang.blaze3d.shaders.Uniform;
+import lumien.chunkanimator.util.UniformWrapper;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
 
@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
  */
 public record PreRenderContext(
         ChunkRenderDispatcher.RenderChunk renderChunk,
-        Uniform uniform,
+        UniformWrapper<?> uniform,
         float x,
         float y,
         float z

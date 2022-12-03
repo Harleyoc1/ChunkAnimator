@@ -4,6 +4,7 @@ import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
 import lumien.chunkanimator.ChunkAnimator;
+import lumien.chunkanimator.util.VanillaUniformWrapper;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
@@ -56,7 +57,7 @@ public final class AsmHandler {
 	 */
 	public static void preRenderChunk(final Uniform uniform, final float x, final float y, final float z,
 									  final ChunkRenderDispatcher.RenderChunk renderChunk) {
-		HANDLER.preRender(new PreRenderContext(renderChunk, uniform, x, y, z));
+		HANDLER.preRender(new PreRenderContext(renderChunk, new VanillaUniformWrapper(uniform), x, y, z));
 	}
 
 }

@@ -1,6 +1,7 @@
 {
   "homepage": "https://www.curseforge.com/minecraft/mc-mods/chunk-animator",
   "1.19.2": {
+    "1.19.2-1.3.7": "Fix animation not working when OptiFine shaders are enabled.",
     "1.9.2-1.3.6": "Fix crash with OptiFine."
   },
   "1.19.1": {

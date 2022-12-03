@@ -8,6 +8,7 @@ import com.mojang.math.Matrix4f;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import lumien.chunkanimator.ChunkAnimator;
 import lumien.chunkanimator.handler.PreRenderContext;
+import lumien.chunkanimator.util.VanillaUniformWrapper;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
@@ -50,7 +51,7 @@ public final class LevelRendererMixin {
         ChunkAnimator.instance.animationHandler.preRender(
                 new PreRenderContext(
                         renderChunk,
-                        chunkOffset,
+                        new VanillaUniformWrapper(chunkOffset),
                         (float) (chunkOrigin.getX() - camX),
                         (float) (chunkOrigin.getY() - camY),
                         (float) (chunkOrigin.getZ() - camZ)
