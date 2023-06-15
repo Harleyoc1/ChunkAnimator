@@ -2,7 +2,6 @@ package lumien.chunkanimator.handler;
 
 import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix4f;
 import lumien.chunkanimator.ChunkAnimator;
 import lumien.chunkanimator.util.VanillaUniformWrapper;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -11,6 +10,7 @@ import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.joml.Matrix4f;
 
 /**
  * This class acts as a "middle man" between Minecraft's transformed classes and
