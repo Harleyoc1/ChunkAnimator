@@ -7,6 +7,9 @@ import java.time.Instant
 import java.time.format.DateTimeFormatter
 
 fun property(key: String) = project.findProperty(key).toString()
+fun optionalProperty(key: String) = project.findProperty(key)?.toString()
+
+apply(from = "https://gist.githubusercontent.com/Harleyoc1/4d23d4e991e868d98d548ac55832381e/raw/applesiliconfg.gradle")
 
 plugins {
     id("java")
@@ -16,6 +19,7 @@ plugins {
     id("idea")
     id("maven-publish")
     id("com.matthewprenger.cursegradle") version "1.4.0"
+    id("com.modrinth.minotaur") version "2.+"
 }
 
 val modName = property("modName")
@@ -28,7 +32,6 @@ version = "$mcVersion-$modVersion"
 group = property("group")
 
 minecraft {
-    mappings("official", mcVersion)
     mappings("parchment", "${property("mappingsVersion")}-$mcVersion")
     accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
 
@@ -143,7 +146,7 @@ publishing {
     }
 }
 
-fun readChangelog(): String? {
+fun readRawChangelog(): String? {
     val versionInfoFile = file("version_info.json")
     val jsonObject = Gson().fromJson(InputStreamReader(versionInfoFile.inputStream()), JsonObject::class.java)
     return jsonObject
@@ -151,24 +154,42 @@ fun readChangelog(): String? {
         ?.get(project.version.toString())?.asString
 }
 
+val rawChangelog = readRawChangelog()!!
+
 curseforge {
-    if (project.hasProperty("curseApiKey") && project.hasProperty("curseFileType")) {
-        apiKey = property("curseApiKey")
-
-        project(closureOf<CurseProject> {
-            id = "236484"
-
-            addGameVersion(mcVersion)
-
-            changelog = readChangelog() ?: ""
-            changelogType = "markdown"
-            releaseType = property("curseFileType")
-
-            addArtifact(tasks.findByName("sourcesJar"))
-        })
-    } else {
-        project.logger.log(LogLevel.WARN, "API Key and file type for CurseForge not detected; uploading will be disabled.")
+    if (!project.hasProperty("curseApiKey")) {
+        project.logger.warn("API Key for CurseForge not detected; uploading will be disabled.")
+        return@curseforge
     }
+
+    apiKey = property("curseApiKey")
+
+    project(closureOf<CurseProject> {
+        id = "236484"
+
+        addGameVersion(mcVersion)
+
+        changelog = rawChangelog
+        changelogType = "markdown"
+        releaseType = optionalProperty("versionType") ?: "release"
+
+        addArtifact(tasks.findByName("sourcesJar"))
+    })
+}
+
+modrinth {
+    if (!project.hasProperty("modrinthToken")) {
+        project.logger.warn("Token for Modrinth not detected; uploading will be disabled.")
+        return@modrinth
+    }
+
+    token.set(property("modrinthToken"))
+    projectId.set(modId)
+    versionNumber.set("$mcVersion-$modVersion")
+    versionType.set(optionalProperty("versionType") ?: "release")
+    uploadFile.set(tasks.jar.get())
+    gameVersions.add(mcVersion)
+    changelog.set(rawChangelog)
 }
 
 fun RunConfig.applyDefaultConfiguration() {
