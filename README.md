@@ -10,7 +10,7 @@
 
 This is a fork of <a href="https://github.com/lumien231">lumien231</a>’s [Chunk Animator](https://github.com/lumien231/Chunk-Animator) which includes support for newer Minecraft versions. 
 
-This can be downloaded from the [The CurseForge page](https://www.curseforge.com/minecraft/mc-mods/chunk-animator/).
+This can be downloaded from the [the CurseForge](https://www.curseforge.com/minecraft/mc-mods/chunk-animator/) or [Modrinth](https://modrinth.com/mod/chunkanimator) page.
 
 When new chunks are loaded in vanilla minecraft they simply "appear instantly", with this mod they can be animated to appear from below, above, or the side. This mod shouldn't impact FPS considerably because all it does is render chunks "somewhere else".
 
