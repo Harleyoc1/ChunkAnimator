@@ -3,15 +3,12 @@ package lumien.chunkanimator;
 import lumien.chunkanimator.config.ChunkAnimatorConfig;
 import lumien.chunkanimator.handler.AnimationHandler;
 import lumien.chunkanimator.handler.LevelEventHandler;
-import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.IExtensionPoint;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.network.NetworkConstants;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * @author lumien231
@@ -25,28 +22,23 @@ public final class ChunkAnimator {
 
 	public AnimationHandler animationHandler;
 
-	public ChunkAnimator() {
+	public ChunkAnimator(IEventBus modBus, ModContainer modContainer) {
 		instance = this;
 
-		final var loadingContext = ModLoadingContext.get();
-		loadingContext.registerExtensionPoint(
-				IExtensionPoint.DisplayTest.class,
-				() -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true)
-		);
-		loadingContext.registerConfig(ModConfig.Type.CLIENT, ChunkAnimatorConfig.SPEC);
+		modContainer.registerConfig(ModConfig.Type.CLIENT, ChunkAnimatorConfig.SPEC);
 
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
+        modBus.addListener(this::setupClient);
 	}
 
 	/**
-	 * Performs setup tasks that should only be run on the client. {@link ChunkRenderDispatcher.RenderChunk#setOrigin(int, int, int)}
+	 * Performs setup tasks that should only be run on the client. {@link net.minecraft.client.renderer.chunk.SectionRenderDispatcher.RenderSection#setOrigin(int, int, int)}
 	 *
 	 * @param event The {@link FMLClientSetupEvent} instance.
 	 */
 	private void setupClient(final FMLClientSetupEvent event) {
 		this.animationHandler = new AnimationHandler();
 
-		MinecraftForge.EVENT_BUS.register(new LevelEventHandler());
+		NeoForge.EVENT_BUS.register(new LevelEventHandler());
 	}
 
 }

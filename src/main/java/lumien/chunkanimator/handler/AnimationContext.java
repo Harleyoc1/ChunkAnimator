@@ -1,8 +1,8 @@
 package lumien.chunkanimator.handler;
 
-import lumien.chunkanimator.util.UniformWrapper;
+import com.mojang.blaze3d.shaders.Uniform;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
+import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
 import net.minecraft.core.BlockPos;
 
 /**
@@ -11,8 +11,8 @@ import net.minecraft.core.BlockPos;
  * @author Harley O'Connor
  */
 public record AnimationContext(
-        ChunkRenderDispatcher.RenderChunk renderChunk,
-        UniformWrapper<?> uniform,
+        SectionRenderDispatcher.RenderSection renderSection,
+        Uniform uniform,
         float x,
         float y,
         float z,

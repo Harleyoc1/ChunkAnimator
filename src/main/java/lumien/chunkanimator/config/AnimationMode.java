@@ -54,7 +54,7 @@ public enum AnimationMode {
     HORIZONTAL_SLIDE_ALTERNATE(
             (context, data) ->
                     data.chunkFacing = getChunkFacing(getZeroedPlayerPos(Objects.requireNonNull(Minecraft.getInstance().player))
-                            .subtract(getZeroedCenteredChunkPos(context.renderChunk().getOrigin()))
+                            .subtract(getZeroedCenteredChunkPos(context.renderSection().getOrigin()))
                     ),
             HORIZONTAL_SLIDE.contextConsumer
     );

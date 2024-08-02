@@ -1,8 +1,6 @@
 package lumien.chunkanimator.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
-import net.minecraftforge.common.ForgeConfigSpec.IntValue;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 /**
  * @author lumien231
@@ -10,21 +8,21 @@ import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 public final class ChunkAnimatorConfig {
 
 	/** The animation mode - controls how the chunks should be animated. */
-	public static final ForgeConfigSpec.EnumValue<AnimationMode> MODE;
+	public static final ModConfigSpec.EnumValue<AnimationMode> MODE;
 
 	/** The easing function - controls which easing function should be used. */
-	public static final ForgeConfigSpec.EnumValue<EasingFunction> EASING_FUNCTION;
+	public static final ModConfigSpec.EnumValue<EasingFunction> EASING_FUNCTION;
 
 	/** The animation duration - controls how long the animation should last (in milliseconds). */
-	public static final IntValue ANIMATION_DURATION;
+	public static final ModConfigSpec.IntValue ANIMATION_DURATION;
 	
 	/** Disable around player - disables animation of chunks near the player. */
-	public static final BooleanValue DISABLE_AROUND_PLAYER;
+	public static final ModConfigSpec.BooleanValue DISABLE_AROUND_PLAYER;
 
-	public static final ForgeConfigSpec SPEC;
+	public static final ModConfigSpec SPEC;
 
 	static {
-		final ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+		final ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
 		MODE = builder.comment("""
 				Defines how the chunks should be animated.

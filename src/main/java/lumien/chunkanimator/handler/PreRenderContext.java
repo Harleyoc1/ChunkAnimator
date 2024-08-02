@@ -1,8 +1,8 @@
 package lumien.chunkanimator.handler;
 
-import lumien.chunkanimator.util.UniformWrapper;
+import com.mojang.blaze3d.shaders.Uniform;
 import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
+import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
 
 /**
  * Holds context gathered from the {@link LevelRenderer} required for pre-rendering
@@ -11,8 +11,8 @@ import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
  * @author Harley O'Connor
  */
 public record PreRenderContext(
-        ChunkRenderDispatcher.RenderChunk renderChunk,
-        UniformWrapper<?> uniform,
+        SectionRenderDispatcher.RenderSection renderSection,
+        Uniform uniform,
         float x,
         float y,
         float z

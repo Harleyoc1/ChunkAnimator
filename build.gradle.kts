@@ -1,8 +1,4 @@
-import com.google.gson.Gson
-import com.google.gson.JsonObject
 import com.matthewprenger.cursegradle.CurseProject
-import net.minecraftforge.gradle.common.util.RunConfig
-import java.io.InputStreamReader
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
@@ -13,13 +9,15 @@ apply(from = "https://gist.githubusercontent.com/Harleyoc1/4d23d4e991e868d98d548
 
 plugins {
     id("java")
-    id("net.minecraftforge.gradle")
-    id("org.parchmentmc.librarian.forgegradle")
-    id("org.spongepowered.mixin")
+    id("net.neoforged.gradle.userdev") version "7.0.145"
     id("idea")
     id("maven-publish")
     id("com.matthewprenger.cursegradle") version "1.4.0"
     id("com.modrinth.minotaur") version "2.+"
+}
+
+tasks.named("wrapper", Wrapper::class).configure {
+    distributionType = Wrapper.DistributionType.BIN
 }
 
 val modName = property("modName")
@@ -31,50 +29,42 @@ val mcVersion = property("mcVersion")
 version = "$mcVersion-$modVersion"
 group = property("group")
 
-minecraft {
-    mappings("parchment", "${property("mappingsVersion")}-$mcVersion")
-    accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
+base {
+    archivesName.set(modName)
+}
 
-    runs {
-        create("client") {
-            workingDirectory = file("run").absolutePath
+runs {
+    configureEach {
+        systemProperty("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")
+        systemProperty("forge.logging.console.level", "debug")
 
-            this.applyDefaultConfiguration()
-
-            if (project.hasProperty("mcUuid")) {
-                args("--uuid", property("mcUuid"))
-            }
-            if (project.hasProperty("mcUsername")) {
-                args("--username", property("mcUsername"))
-            }
-            if (project.hasProperty("mcAccessToken")) {
-                args("--accessToken", property("mcAccessToken"))
-            }
-        }
-
-        create("server") {
-            workingDirectory = file("run-server").absolutePath
-
-            this.applyDefaultConfiguration()
-        }
+        modSource(project.sourceSets["main"])
     }
 }
 
-mixin {
-    add(sourceSets.main.get(), "$modId.refmap.json")
-}
-
 dependencies {
-    minecraft("net.minecraftforge:forge:$mcVersion-${property("forgeVersion")}")
-
-    annotationProcessor("org.spongepowered:mixin:${property("mixinVersion")}:processor")
+    implementation("net.neoforged:neoforge:${property("forgeVersion")}")
 }
 
 java {
     withSourcesJar()
 
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+tasks.withType(ProcessResources::class).configureEach {
+    val replaceProperties = mapOf(
+        "mcVersionRange" to project.findProperty("mcVersionRange"),
+        "forgeVersionRange" to project.findProperty("forgeVersionRange"),
+        "loaderVersionRange" to project.findProperty("loaderVersionRange"),
+        "modId" to project.findProperty("modId"),
+        "modVersion" to project.findProperty("modVersion")
+    )
+    inputs.properties(replaceProperties)
+    filesMatching("META-INF/neoforge.mods.toml") {
+        expand(replaceProperties)
     }
 }
 
@@ -86,12 +76,10 @@ tasks.jar {
         "Implementation-Title" to project.name,
         "Implementation-Version" to project.version,
         "Implementation-Vendor" to "Harley O'Connor", // I am the author of this port.
-        "Implementation-Timestamp" to DateTimeFormatter.ISO_INSTANT.format(Instant.now()),
-        "MixinConnector" to "lumien.chunkanimator.MixinConnector"
+        "Implementation-Timestamp" to DateTimeFormatter.ISO_INSTANT.format(Instant.now())
     )
 
     archiveBaseName.set(modName)
-    finalizedBy("reobfJar")
 }
 
 tasks.withType<GenerateModuleMetadata> {
@@ -146,16 +134,6 @@ publishing {
     }
 }
 
-fun readRawChangelog(): String? {
-    val versionInfoFile = file("version_info.json")
-    val jsonObject = Gson().fromJson(InputStreamReader(versionInfoFile.inputStream()), JsonObject::class.java)
-    return jsonObject
-        ?.get(mcVersion)?.asJsonObject
-        ?.get(project.version.toString())?.asString
-}
-
-val rawChangelog = readRawChangelog()!!
-
 curseforge {
     if (!project.hasProperty("curseApiKey")) {
         project.logger.warn("API Key for CurseForge not detected; uploading will be disabled.")
@@ -169,7 +147,7 @@ curseforge {
 
         addGameVersion(mcVersion)
 
-        changelog = rawChangelog
+        changelog = "Changelog pending."
         changelogType = "markdown"
         releaseType = optionalProperty("versionType") ?: "release"
 
@@ -189,22 +167,5 @@ modrinth {
     versionType.set(optionalProperty("versionType") ?: "release")
     uploadFile.set(tasks.jar.get())
     gameVersions.add(mcVersion)
-    changelog.set(rawChangelog)
-}
-
-fun RunConfig.applyDefaultConfiguration() {
-    property("forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP")
-    property("forge.logging.console.level", "debug")
-
-    property("mixin.debug.export", "true")
-    property("mixin.env.remapRefMap", "true")
-    property("mixin.env.refMapRemappingFile", "${buildDir}/createSrgToMcp/output.srg")
-
-    args("-mixin.config=$modId.mixins.json")
-
-    mods {
-        create(modId) {
-            source(sourceSets.main.get())
-        }
-    }
+    changelog.set("Changelog pending.")
 }

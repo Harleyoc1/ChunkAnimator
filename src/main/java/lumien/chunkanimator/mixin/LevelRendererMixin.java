@@ -1,16 +1,14 @@
 package lumien.chunkanimator.mixin;
 
 import com.mojang.blaze3d.shaders.Uniform;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexBuffer;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import lumien.chunkanimator.ChunkAnimator;
 import lumien.chunkanimator.handler.PreRenderContext;
-import lumien.chunkanimator.util.VanillaUniformWrapper;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ShaderInstance;
-import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
+import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,34 +24,33 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(LevelRenderer.class)
 public final class LevelRendererMixin {
 
-    @Redirect(method = "renderChunkLayer", at = @At(
+    @Redirect(method = "renderSectionLayer", at = @At(
             value = "INVOKE",
             target = "Lcom/mojang/blaze3d/shaders/Uniform;set(FFF)V"
     ))
     private void preventDefaultOffset(Uniform chunkOffset, float x, float y, float z) {
-        // Since this doesn't allow local capture and we need access to the renderChunk we simply do nothing here
-        // and replace this with our own logic in #preRenderChunk.
+        // Since this doesn't allow local capture and we need access to the renderSection we simply do nothing here
+        // and replace this with our own logic in #preRenderSection.
     }
 
-    @Inject(method = "renderChunkLayer", at = @At(
+    @Inject(method = "renderSectionLayer", at = @At(
             value = "INVOKE",
             shift = At.Shift.BEFORE,
             target = "Lcom/mojang/blaze3d/shaders/Uniform;upload()V"
     ), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void preRenderChunk(RenderType renderType, PoseStack poseStack, double camX, double camY, double camZ,
-                                Matrix4f projectionMatrix, CallbackInfo ci, boolean notTranslucent,
-                                ObjectListIterator<LevelRenderer.RenderChunkInfo> renderChunkIterator,
-                                ShaderInstance shaderInstance, Uniform chunkOffset,
-                                LevelRenderer.RenderChunkInfo renderChunkInfo,
-                                ChunkRenderDispatcher.RenderChunk renderChunk, VertexBuffer chunkVertexBuffer,
-                                BlockPos chunkOrigin) {
+    private void preRenderSection(RenderType renderType, double camX, double camY, double camZ,
+                                  Matrix4f frustrumMatrix, Matrix4f projectionMatrix, CallbackInfo ci, boolean notTranslucent,
+                                  ObjectListIterator<SectionRenderDispatcher.RenderSection> renderSectionIterator,
+                                  ShaderInstance shaderInstance, Uniform chunkOffset,
+                                  SectionRenderDispatcher.RenderSection renderSection,
+                                  VertexBuffer sectionVertexBuffer, BlockPos sectionOrigin) {
         ChunkAnimator.instance.animationHandler.preRender(
                 new PreRenderContext(
-                        renderChunk,
-                        new VanillaUniformWrapper(chunkOffset),
-                        (float) (chunkOrigin.getX() - camX),
-                        (float) (chunkOrigin.getY() - camY),
-                        (float) (chunkOrigin.getZ() - camZ)
+                        renderSection,
+                        chunkOffset,
+                        (float) (sectionOrigin.getX() - camX),
+                        (float) (sectionOrigin.getY() - camY),
+                        (float) (sectionOrigin.getZ() - camZ)
                 )
         );
     }

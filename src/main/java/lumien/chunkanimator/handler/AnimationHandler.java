@@ -4,12 +4,12 @@ import lumien.chunkanimator.config.AnimationMode;
 import lumien.chunkanimator.config.ChunkAnimatorConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher;
+import net.minecraft.client.renderer.chunk.SectionRenderDispatcher;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.Objects;
 import java.util.WeakHashMap;
@@ -23,10 +23,10 @@ import java.util.WeakHashMap;
 public final class AnimationHandler {
 
     private final Minecraft mc = Minecraft.getInstance();
-    private final WeakHashMap<ChunkRenderDispatcher.RenderChunk, AnimationData> timeStamps = new WeakHashMap<>();
+    private final WeakHashMap<SectionRenderDispatcher.RenderSection, AnimationData> timeStamps = new WeakHashMap<>();
 
     public void preRender(PreRenderContext context) {
-        final var animationData = timeStamps.get(context.renderChunk());
+        final var animationData = timeStamps.get(context.renderSection());
 
         if (animationData == null) {
             context.uniform().set(context.x(), context.y(), context.z());
@@ -49,23 +49,23 @@ public final class AnimationHandler {
 
         if (timeDif < animationDuration) {
             ChunkAnimatorConfig.MODE.get().contextConsumer().accept(new AnimationContext(
-                    context.renderChunk(),
+                    context.renderSection(),
                     context.uniform(),
                     context.x(),
                     context.y(),
                     context.z(),
                     animationData,
-                    context.renderChunk().getOrigin(),
+                    context.renderSection().getOrigin(),
                     timeDif,
                     AnimationContext.LevelContext.from(Objects.requireNonNull(this.mc.level))
             ));
         } else {
             context.uniform().set(context.x(), context.y(), context.z());
-            this.timeStamps.remove(context.renderChunk());
+            this.timeStamps.remove(context.renderSection());
         }
     }
 
-    public void setOrigin(final ChunkRenderDispatcher.RenderChunk renderChunk, final BlockPos pos) {
+    public void setOrigin(final SectionRenderDispatcher.RenderSection renderSection, final BlockPos pos) {
         if (this.mc.player == null)
             return;
 
@@ -73,10 +73,10 @@ public final class AnimationHandler {
         final BlockPos zeroedCenteredChunkPos = getZeroedCenteredChunkPos(pos);
 
         if (!ChunkAnimatorConfig.DISABLE_AROUND_PLAYER.get() || zeroedPlayerPos.distSqr(zeroedCenteredChunkPos) > (64 * 64)) {
-            timeStamps.put(renderChunk, new AnimationData(-1L, ChunkAnimatorConfig.MODE.get() == AnimationMode.HORIZONTAL_SLIDE ?
+            timeStamps.put(renderSection, new AnimationData(-1L, ChunkAnimatorConfig.MODE.get() == AnimationMode.HORIZONTAL_SLIDE ?
                     getChunkFacing(zeroedPlayerPos.subtract(zeroedCenteredChunkPos)) : null));
         } else {
-            timeStamps.remove(renderChunk);
+            timeStamps.remove(renderSection);
         }
     }
 
